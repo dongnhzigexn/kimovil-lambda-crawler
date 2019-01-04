@@ -16,7 +16,6 @@ cd kimovil-list-handler && bundle install --path vendor/bundle
 ```
 - Change aws credential keys and put your keys in there.
 ```
-
 cp kimovil-detail-handler/keys.yml.sample kimovil-detail-handler/keys.yml
 
 cp kimovil-list-handler/keys.yml.sample kimovil-list-handler/keys.yml
