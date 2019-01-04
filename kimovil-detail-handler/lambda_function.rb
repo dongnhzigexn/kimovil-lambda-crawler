@@ -2,18 +2,16 @@ require 'json'
 require 'rest-client'
 require 'nokogiri'
 require 'yaml'
-require 'aws-sdk-dynamodb'
-require_relative 'dynamodb'
 require 'digest'
+require_relative 'dynamodb'
 
 def lambda_handler(event:, context:)
   url = event['url']
   res = RestClient.get(url)
   doc = Nokogiri::HTML(res)
-  name = squish(doc.css('.description h1').children.last.text)
-  antutu = doc.css('div.fc.w100.antutu').children.last.text.gsub(/\D/, '')
-  price = doc.css('div.other-devices-list-version li.item.active span.ksps span.xx_usd').text.gsub(/\D/, '')
-  id = Digest::MD5.hexdigest(name + antutu + price)
+  
+  # Parse data from detail page
+  name, antutu, price, id = get_data(doc)
 
   data = {
     Id: id,
@@ -27,6 +25,14 @@ def lambda_handler(event:, context:)
 
   # Save crawled data to db
   DynamoDb.save_to_db('kimovil-result', data)
+end
+
+def get_data(doc)
+  name = squish(doc.css('.description h1').children.last.text)
+  antutu = doc.css('div.fc.w100.antutu').children.last.text.gsub(/\D/, '')
+  price = doc.css('div.other-devices-list-version li.item.active span.ksps span.xx_usd').text.gsub(/\D/, '')
+  id = Digest::MD5.hexdigest(name + antutu + price)
+  return [name, antutu, price, id]
 end
 
 def squish(str)

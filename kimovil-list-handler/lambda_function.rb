@@ -22,9 +22,11 @@ def lambda_handler(event:, context:)
   phone_detail_links = doc.css('div.item-wrapper a.open-newtab').map { |a| { url: a['href'] } }
   
   phone_detail_links.each do |link|
+    # Invoke lambda handler for detail link
     LambdaClient.invoke('kimovil-detail-handler-2', link)
   end
-
+  
+  # Invoke lambda handler for next page
   LambdaClient.invoke('kimovil-list-handler-2', { url: next_page_link })
 
   # Save crawled page to db

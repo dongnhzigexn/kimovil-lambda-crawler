@@ -19,5 +19,5 @@ module LambdaClient
       function_name: function,
       invoke_args: event.to_json
     })
-  end 
+  end
 end
