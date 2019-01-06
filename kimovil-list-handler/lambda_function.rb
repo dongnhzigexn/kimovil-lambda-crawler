@@ -13,6 +13,7 @@ def lambda_handler(event:, context:)
   return if url.include? 'page.50'
 
   res = RestClient.get(url)
+  status = res.code
   res = JSON.parse(res)
   
   doc = Nokogiri::HTML(res['content'])
@@ -31,7 +32,7 @@ def lambda_handler(event:, context:)
   threads.map(&:join)
 
   # Save crawled page to db
-  DynamoDb.save_to_db('kimovil-crawled-pages', { url: url, created_at: Time.now.to_s })
+  DynamoDb.save_to_db('kimovil-crawled-pages', { url: url, status: status, created_at: Time.now.to_s })
 
 rescue => e
   puts "ERROR: #{e}"

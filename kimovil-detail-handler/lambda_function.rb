@@ -26,7 +26,10 @@ def lambda_handler(event:, context:)
   DynamoDb.save_to_db('kimovil-result', data)
 
   # Save crawled links to db
-  DynamoDb.save_to_db('kimovil-crawled-links', { url: url, created_at: created_at })
+  DynamoDb.save_to_db('kimovil-crawled-links', { url: url, status: res.code, created_at: created_at })
+  
+rescue => e
+  puts "ERROR: #{e}"
 end
 
 def get_data(doc)
